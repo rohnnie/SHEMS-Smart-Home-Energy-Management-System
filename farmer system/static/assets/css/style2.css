@@ -708,7 +708,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 --------------------------------------------------------------*/
 
 #about {
-    background: url("../img/bg.jpg");
+    background: url("../img/bg2.jpeg");
     background-size: cover;
     overflow: hidden;
     position: relative;
@@ -993,7 +993,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 
 #venue .venue-info {
-    background: url("../img/venue-info-bg.jpg") top center no-repeat;
+    background: url("../img/venue-info-bg2.jpeg") top center no-repeat;
     background-size: cover;
     position: relative;
     padding-top: 60px;
@@ -1256,7 +1256,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 
 #subscribe {
     padding: 60px;
-    background: url(../img/subscribe-bg.jpg) center center no-repeat;
+    background: url(../img/subscribe-bg2.jpeg) center center no-repeat;
     background-size: cover;
     overflow: hidden;
     position: relative;
