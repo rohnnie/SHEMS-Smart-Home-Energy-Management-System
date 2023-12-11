@@ -21,7 +21,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 # app.config['SQLALCHEMY_DATABASE_URL']='mysql://username:password@localhost/databas_table_name'
-app.config['SQLALCHEMY_DATABASE_URI']='mysql://root:@127.0.0.1/farmers'
+app.config['SQLALCHEMY_DATABASE_URI']='mysql://root:@127.0.0.1/shems'
 db=SQLAlchemy(app)
 
 # here we will create db models that is tables
@@ -29,26 +29,38 @@ class Test(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(100))
 
-class Farming(db.Model):
+class Product(db.Model):
     fid=db.Column(db.Integer,primary_key=True)
-    t_id = db.Column(db.Integer, db.ForeignKey('typee.tid'), nullable=False)
+    type1 = db.Column(db.String(10), nullable=False)
     Product_Models=db.Column(db.String(100))
     
 class Typee(db.Model):
     tid=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(50))
-    Type=db.relationship('Farming')
 
 
-class Addagroproducts(db.Model):
-    Location_unit_number=db.Column(db.String(50))
-    Type=db.Column(db.String(50))
+class Adddevice(db.Model):
     pid=db.Column(db.Integer,primary_key=True)
+
+    Location_unit_number=db.Column(db.Integer)
+    Type=db.Column(db.String(50))
     Product=db.Column(db.String(50))
     Color=db.Column(db.String(300))
     price=db.Column(db.Integer)
+    t=db.relationship('EnergyData')
 
+class EnergyData(db.Model):
+    eid=db.Column(db.Integer,primary_key=True)
+    pid=db.Column(db.Integer,db.ForeignKey('Adddevice.pid'), nullable=False)
+    timeinterval=db.Column(db.DateTime)
+    eventlabel=db.Column(db.String(50))
+    value=db.Column(db.Integer)
 
+class ConsumptionPrices(db.Model):
+    cid=db.Column(db.Integer,primary_key=True)
+    Zip_Code=db.Column(db.Integer)
+    Timenoted=db.Column(db.DateTime)
+    Price=db.Column(db.Integer)
 
 class Trig(db.Model):
     id=db.Column(db.Integer,primary_key=True)
@@ -62,8 +74,11 @@ class User(UserMixin,db.Model):
     username=db.Column(db.String(50))
     email=db.Column(db.String(50),unique=True)
     password=db.Column(db.String(1000))
+    uid=db.relationship('Register')
+
 
 class Register(db.Model):
+    uid=db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
     rid=db.Column(db.Integer,primary_key=True)
     Unit_Number=db.Column(db.String(50))
     City=db.Column(db.String(50))
@@ -72,6 +87,8 @@ class Register(db.Model):
     Area=db.Column(db.String(50))
     Bedrooms=db.Column(db.String(50))
     Occupants=db.Column(db.String(50))
+    loc=db.relationship('Adddevice')
+
 
 
 @app.route('/')
@@ -82,18 +99,19 @@ def index():
 @login_required
 def LocationDetails():
     # query=db.engine.execute(f"SELECT * FROM `register`") 
+    uid={current_user.id}
     query=Register.query.all()
     return render_template('LocationDetails.html',query=query)
 
 @app.route('/Devices')
 def Devices():
-    # query=db.engine.execute(f"SELECT * FROM `addagroproducts`") 
-    query=Addagroproducts.query.all()
+    # query=db.engine.execute(f"SELECT * FROM `Adddevice`") 
+    query=Adddevice.query.all()
     return render_template('Devices.html',query=query)
 
-@app.route('/addagroproduct',methods=['POST','GET'])
+@app.route('/adddevice',methods=['POST','GET'])
 @login_required
-def addagroproduct():
+def adddevice():
     type1=Typee.query.all()
     num=Register.query.all()
     if request.method=="POST":
@@ -102,27 +120,24 @@ def addagroproduct():
         Product=request.form.get('Product')
         Color=request.form.get('Color')
         price=request.form.get('price')
-        products=Addagroproducts(Location_unit_number=Location_unit_number,Type=Type,Product=Product,Color=Color,price=price)
+        products=Adddevice(Location_unit_number=Location_unit_number,Type=Type,Product=Product,Color=Color,price=price)
         db.session.add(products)
         db.session.commit()
         flash("Product Added","info")
         return redirect('/Devices')
-    return render_template('addagroproducts.html',type1=type1, num=num)
+    return render_template('adddevice.html',type1=type1, num=num)
 
-@app.route("/carbrand",methods=["POST","GET"])
-@login_required
-def carbrand():  
-    if request.method == 'POST':
-        category_id = request.form.get('category_id')
-        print(category_id)  
-        m=Farming.query.filter_by(t_id=category_id).all() 
-        OutputArray = []
-        for row in m:
-            outputObj = {
-                'id': row['t_id'],
-                'name': row['Product_Models']}
-            OutputArray.append(outputObj)
-    return jsonify(OutputArray)
+@app.route('/prod/<type1>')
+def city(type1):
+    model = Product.query.filter_by(type1=type1).all()
+    modelarray = []
+    for a in model:
+        mObj = {}
+        mObj['fid'] = a.fid
+        mObj['Product_Models'] = a.Product_Models
+        modelarray.append(mObj)
+
+    return jsonify({'Models' : modelarray})
 
 @app.route('/triggers')
 @login_required
@@ -162,7 +177,7 @@ def delete(rid):
 @app.route("/edit/<string:rid>",methods=['POST','GET'])
 @login_required
 def edit(rid):
-    # farming=db.engine.execute("SELECT * FROM `farming`") 
+    # product=db.engine.execute("SELECT * FROM `product`") 
     if request.method=="POST":
         Unit_Number=request.form.get('Unit_Number')
         City=request.form.get('City')
@@ -185,8 +200,8 @@ def edit(rid):
         flash("Slot is Updates","success")
         return redirect('/LocationDetails')
     posts=Register.query.filter_by(rid=rid).first()
-    farming=Farming.query.all()
-    return render_template('edit.html',posts=posts,farming=farming)
+    product=Product.query.all()
+    return render_template('edit.html',posts=posts,product=product)
 
 
 @app.route('/signup',methods=['POST','GET'])
@@ -244,8 +259,9 @@ def logout():
 @app.route('/register',methods=['POST','GET'])
 @login_required
 def register():
-    farming=Farming.query.all()
+    product=Product.query.all()
     if request.method=="POST":
+        uid={current_user.get_id}
         Unit_Number=request.form.get('Unit_Number')
         City=request.form.get('City')
         State=request.form.get('State')
@@ -259,7 +275,7 @@ def register():
         # query=db.engine.execute(f"INSERT INTO `register` (`Unit_Number`,`City`,`State`,`Zip_Code`,`Bedrooms`,`Area`,`Occupants`) VALUES ('{Unit_Number}','{City}','{State}','{Zip_Code}','{Bedrooms}','{Area}','{Occupants}')")
         # flash("Your Record Has Been Saved","success")
         return redirect('/LocationDetails')
-    return render_template('Location.html',farming=farming)
+    return render_template('Location.html',product=product)
 
 @app.route('/test')
 def test():

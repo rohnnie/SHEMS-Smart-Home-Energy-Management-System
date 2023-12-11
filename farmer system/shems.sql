@@ -18,17 +18,18 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `farmers`
+-- Database: `shems`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `addagroproducts`
+-- Table structure for table `adddevice`
 --
 
-CREATE TABLE `addagroproducts` (
+CREATE TABLE `adddevice` (
   `Location_unit_number` int(5) NOT NULL,
+  `bid` int(11) NOT NULL,
   `Type` varchar(50) NOT NULL,
   `pid` int(11) NOT NULL,
   `Product` varchar(100) NOT NULL,
@@ -37,7 +38,7 @@ CREATE TABLE `addagroproducts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `addagroproducts`
+-- Dumping data for table `adddevice`
 --
 
 -- --------------------------------------------------------
@@ -65,26 +66,26 @@ INSERT INTO `typee` (`tid`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `farming`
+-- Table structure for table `product`
 --
 
-CREATE TABLE `farming` (
+CREATE TABLE `product` (
   `fid` int(11) NOT NULL,
-  `t_id` int(20) NOT NULL,  
+  `type1` varchar(20) NOT NULL,  
   `Product_Models` varchar(50) NOT NULL  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `farming`
+-- Dumping data for table `product`
 --
 
-INSERT INTO `farming` (`fid`, `t_id`,`Product_Models`) VALUES
-(1, 1,'GE Cafe 400 Refrigerator'),
-(2, 2,'LG Smart AC Unit'),
-(3, 3,'Usha'),
-(4, 4,'Google Nest Oven'),
-(5, 5,'Whirlpool XYZ Washer'),
-(6, 6,'Solar');
+INSERT INTO `product` (`fid`, `type1`,`Product_Models`) VALUES
+(1, 'Fridge','GE Cafe 400 Refrigerator'),
+(2, 'AC','LG Smart AC Unit'),
+(3, 'Fan','Usha'),
+(4, 'Oven','Google Nest Oven'),
+(5, 'Dishwasher','Whirlpool XYZ Washer'),
+(6, 'LED Lights','Solar');
 
 -- --------------------------------------------------------
 
@@ -94,11 +95,12 @@ INSERT INTO `farming` (`fid`, `t_id`,`Product_Models`) VALUES
 
 CREATE TABLE `register` (
   `rid` int(11) NOT NULL,
+  `uid` int(11) NOT NULL,
   `Unit_Number` int(5) NOT NULL,
   `City` varchar(20) NOT NULL,
-  `State` varchar(10) NOT NULL,
+  `State` varchar(50) NOT NULL,
   `Zip_Code` int(5) NOT NULL,
-  `Area` varchar(12) NOT NULL,
+  `Area` int(5) NOT NULL,
   `Bedrooms` int(2) NOT NULL,
   `Occupants` int(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -317,15 +319,17 @@ INSERT INTO `user` (`id`, `username`, `email`, `password`) VALUES
 --
 
 --
--- Indexes for table `addagroproducts`
+-- Indexes for table `adddevice`
 --
-ALTER TABLE `addagroproducts`
+ALTER TABLE `adddevice`
   ADD PRIMARY KEY (`pid`);
 
+
+
 --
--- Indexes for table `farming`
+-- Indexes for table `product`
 --
-ALTER TABLE `farming`
+ALTER TABLE `product`
   ADD PRIMARY KEY (`fid`);
 
 --
@@ -334,7 +338,7 @@ ALTER TABLE `farming`
 ALTER TABLE `register`
   ADD PRIMARY KEY (`rid`);
 
---
+
 -- Indexes for table `energydata`
 --
 ALTER TABLE `energydata`
@@ -372,10 +376,10 @@ ALTER TABLE `typee`
 --
 
 --
--- AUTO_INCREMENT for table `addagroproducts`
+-- AUTO_INCREMENT for table `adddevice`
 --
-ALTER TABLE `addagroproducts`
-  MODIFY `pid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+ALTER TABLE `adddevice`
+  MODIFY `pid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1001;
 
 --
 -- AUTO_INCREMENT for table `typee`
@@ -387,7 +391,7 @@ ALTER TABLE `typee`
 -- AUTO_INCREMENT for table `energydata`
 --
 ALTER TABLE `energydata`
-  MODIFY `eid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `eid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
 
 --
 -- AUTO_INCREMENT for table `consumtionprices`
@@ -396,16 +400,16 @@ ALTER TABLE `consumtionprices`
   MODIFY `cid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `farming`
+-- AUTO_INCREMENT for table `product`
 --
-ALTER TABLE `farming`
+ALTER TABLE `product`
   MODIFY `fid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `register`
 --
 ALTER TABLE `register`
-  MODIFY `rid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `rid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `test`
