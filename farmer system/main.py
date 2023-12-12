@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash,check_password_hash
 from flask_login import login_user,logout_user,login_manager,LoginManager
 from flask_login import login_required,current_user
 from sqlalchemy import text,create_engine
-import sqlalchemy
+import json
 
 
 
@@ -313,10 +313,21 @@ def views():
 def enery_consumption_per_device():
     return render_template('enery_consumption_per_device.html')
 
-@app.route("/total_enerygy_consumption")
+@app.route("/total_energy_consumption")
 @login_required
-def total_enerygy_consumption():
-    return render_template('enery_consumption_per_device.html')
+def total_energy_consumption():
+    res=conn.execute(text(f"""select bid as Unit_Number,sum(value) as Total_Energy from adddevice ad 
+                          join energydata ed on ad.pid=ed.pid where timeinterval 
+                          between \"2022-08-27\" and \"2022-08-30\" and 
+                          eventlabel=\"Energy Use\" group by bid"""))
+    res1=[row for row in res]
+    labels=[]
+    data=[]
+    for r in res1:
+        labels.append(r[0])
+        data.append(float(r[1]))
+    print(labels,data)
+    return render_template('total_energy_consumption.html',labels=json.dumps(labels),data=json.dumps(data))
 
 
 
