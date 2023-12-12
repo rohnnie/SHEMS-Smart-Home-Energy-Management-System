@@ -215,7 +215,7 @@ CREATE TABLE `consumtionprices` (
   `cid` int(11) NOT NULL,
   `Zip_Code` int(5) NOT NULL,
   `Timenoted` datetime NOT NULL,
-  `Price` int(10) NOT NULL
+  `Price` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --

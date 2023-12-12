@@ -6,26 +6,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <title>View 1</title>
+    <title>Total Energy Consumption in Month of August </title>
 </head>
 <body>
     <div>
-        <canvas id="total_enerygy_consumption"></canvas>
+        <canvas id="total_energy_consumption" max-width="100" max-height="100"></canvas>
       </div>
       
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       
       <script>
-        const ctx = document.getElementById('total_enerygy_consumption');
+        let label123 = JSON.parse({{labels | tojson}});
+        let data = JSON.parse({{data | tojson}});
+        const ctx = document.getElementById('total_energy_consumption');
       
         new Chart(ctx, {
-          type: 'line',
+          type: 'pie',
           data: {
-            labels: ['11:00:00','12:00:00','12:59:45','09:00:00','10:00:00','11:00:00','11:59:45'],
+            labels: label123,
             datasets: [{
-              label: 'Energy Consumption in Kw',
-              data: [1.23, 0.99, 3.12, 0, 0.66, 0.87,2.32],
-              borderWidth: 1
+              label: 'Total Energy Consumption in Kw for the month of August 2022',
+              data: data,
+              borderWidth: 0.5
             }]
           },
           options: {
