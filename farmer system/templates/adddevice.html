@@ -93,7 +93,7 @@ Add Smart Device
               response.json().then(function(data) {
                 var optionHTML = '';
               for (var model of data.Models) {
-                optionHTML += '<option value="' + model.fid + '">' + model.Product_Models + '</option>';
+                optionHTML += "<option value=" + model.Product_Models + ">" + model.Product_Models + "</option>";
                 }
                 
                 p_select.innerHTML = optionHTML;

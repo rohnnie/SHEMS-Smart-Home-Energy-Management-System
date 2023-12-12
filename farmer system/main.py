@@ -27,7 +27,7 @@ def load_user(user_id):
 app.config['SQLALCHEMY_DATABASE_URI']='mysql://root:@127.0.0.1/shems'
 db=SQLAlchemy(app)
 engine = create_engine("mysql://root:@127.0.0.1/shems")
-conn=engine.connect()
+#conn=engine.connect()
 
 # here we will create db models that is tables
 class Test(db.Model):
@@ -103,44 +103,47 @@ def index():
 @app.route('/LocationDetails')
 @login_required
 def LocationDetails():
-    query=conn.execute(text(f"SELECT * FROM register where uid={current_user.get_id()}"))
-   # query=Register.query.filter_by(uid=current_user.get_id()).all()
-    return render_template('LocationDetails.html',query=query)
+    with engine.connect() as conn:
+        query=conn.execute(text(f"SELECT * FROM register where uid={current_user.get_id()}"))
+    # query=Register.query.filter_by(uid=current_user.get_id()).all()
+        return render_template('LocationDetails.html',query=query)
 
 @app.route('/Devices')
 def Devices():
-    m=conn.execute(text(f"SELECT * FROM register where uid={current_user.get_id()}"))
-    res=[row[0] for row in m]
-    res1=[]
-    for x in res:
-        query=conn.execute(text(f"SELECT * FROM Adddevice where bid={x}"))
-        for y in query:
-            res1.append(y)
-    return render_template('Devices.html',query=res1)
+    with engine.connect() as conn:
+        m=conn.execute(text(f"SELECT * FROM register where uid={current_user.get_id()}"))
+        res=[row[0] for row in m]
+        res1=[]
+        for x in res:
+            query=conn.execute(text(f"SELECT * FROM Adddevice where bid={x}"))
+            for y in query:
+                res1.append(y)
+        return render_template('Devices.html',query=res1)
 
 @app.route('/adddevice',methods=['POST','GET'])
 @login_required
 def adddevice():
-    type1=conn.execute(text(f"SELECT * FROM Typee"))
-    num=conn.execute(text(f"SELECT * FROM Register"))
-    if request.method=="POST":
-        Location_unit_number=request.form.get('Location_unit_number')
-        Type=request.form.get('Type')
-        Product=request.form.get('Product')
-        Color=request.form.get('Color')
-        price=request.form.get('price')
-        l1=conn.execute(text(f"Select * from Register where Unit_Number={Location_unit_number}"))
-        res=[row[0] for row in l1][0]
-        #l=Register.query.filter_by(Unit_Number=Location_unit_number).first()
-        print(res,Type,Product,Color,price)
-        products=conn.execute(text(f"INSERT INTO Adddevice(bid,Location_unit_number,Type,Product,Color,price) VALUES ({res},{Location_unit_number},\"{Type}\", {Product}, \"{Color}\",{price})"))
-        #products=Adddevice(bid=l.rid,Location_unit_number=Location_unit_number,Type=Type,Product=Product,Color=Color,price=price)
-        #db.session.add(products)
-        conn.execute(text(f"COMMIT"))
-        #db.session.commit()
-        flash("Product Added","info")
-        return redirect('/Devices')
-    return render_template('adddevice.html',type1=type1, num=num)
+    with engine.connect() as conn:
+        type1=conn.execute(text(f"SELECT * FROM Typee"))
+        num=conn.execute(text(f"SELECT * FROM Register"))
+        if request.method=="POST":
+            Location_unit_number=request.form.get('Location_unit_number')
+            Type=request.form.get('Type')
+            Product=request.form.get('Product')
+            Color=request.form.get('Color')
+            price=request.form.get('price')
+            l1=conn.execute(text(f"Select * from Register where Unit_Number={Location_unit_number}"))
+            res=[row[0] for row in l1][0]
+            #l=Register.query.filter_by(Unit_Number=Location_unit_number).first()
+            print(res,Type,Product,Color,price)
+            products=conn.execute(text(f"INSERT INTO Adddevice(bid,Location_unit_number,Type,Product,Color,price) VALUES ({res},{Location_unit_number},\"{Type}\", \"{Product}\", \"{Color}\",{price})"))
+            #products=Adddevice(bid=l.rid,Location_unit_number=Location_unit_number,Type=Type,Product=Product,Color=Color,price=price)
+            #db.session.add(products)
+            conn.execute(text(f"COMMIT"))
+            #db.session.commit()
+            flash("Product Added","info")
+            return redirect('/Devices')
+        return render_template('adddevice.html',type1=type1, num=num)
 
 @app.route('/prod/<type1>')
 def city(type1):
@@ -159,9 +162,10 @@ def city(type1):
 @app.route('/triggers')
 @login_required
 def triggers():
+    with engine.connect() as conn:
     # query=db.engine.execute(f"SELECT * FROM `trig`") 
-    query=conn.execute(text(f"SELECT * FROM Trig"))
-    return render_template('triggers.html',query=query)
+        query=conn.execute(text(f"SELECT * FROM Trig"))
+        return render_template('triggers.html',query=query)
 
 @app.route('/gettype',methods=['POST','GET'])
 @login_required
@@ -311,23 +315,40 @@ def views():
 @app.route("/enery_consumption_per_device")
 @login_required
 def enery_consumption_per_device():
-    return render_template('enery_consumption_per_device.html')
+    with engine.connect() as conn:
+        res=conn.execute(text(f"""select type,sum(value) as energyconsumedbydevice from adddevice ad 
+                            join energydata ed on ad.pid=ed.pid join
+                            register r on r.rid=ad.bid join 
+                            user u on uid={current_user.get_id()} where timeinterval 
+                            between \"2022-08-27\" and \"2022-08-30\" and 
+                            eventlabel=\"Energy Use\" group by type"""))
+        res1=[row for row in res]
+        labels=[]
+        data=[]
+        for r in res1:
+            labels.append(r[0])
+            data.append(float(r[1]))
+        print(labels,data)
+        return render_template('enery_consumption_per_device.html',labels=json.dumps(labels),data=json.dumps(data))
 
 @app.route("/total_energy_consumption")
 @login_required
 def total_energy_consumption():
-    res=conn.execute(text(f"""select bid as Unit_Number,sum(value) as Total_Energy from adddevice ad 
-                          join energydata ed on ad.pid=ed.pid where timeinterval 
-                          between \"2022-08-27\" and \"2022-08-30\" and 
-                          eventlabel=\"Energy Use\" group by bid"""))
-    res1=[row for row in res]
-    labels=[]
-    data=[]
-    for r in res1:
-        labels.append(r[0])
-        data.append(float(r[1]))
-    print(labels,data)
-    return render_template('total_energy_consumption.html',labels=json.dumps(labels),data=json.dumps(data))
+    with engine.connect() as conn:
+        res=conn.execute(text(f"""select timeinterval,value as energyconsumedbydevice from adddevice ad 
+                            join energydata ed on ad.pid=ed.pid join
+                            register r on r.rid=ad.bid join 
+                            user u on uid={current_user.get_id()} where timeinterval 
+                            between \"2022-08-27\" and \"2022-08-30\" and 
+                            eventlabel=\"Energy Use\" order by timeinterval"""))
+        res1=[row for row in res]
+        labels=[]
+        data=[]
+        for r in res1:
+            labels.append(r[0])
+            data.append(float(r[1]))
+        print(labels,data)
+        return render_template('total_energy_consumption.html',labels=json.dumps(labels,indent=4, sort_keys=True, default=str),data=json.dumps(data))
 
 
 

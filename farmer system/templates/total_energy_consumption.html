@@ -21,7 +21,7 @@
         const ctx = document.getElementById('total_energy_consumption');
       
         new Chart(ctx, {
-          type: 'pie',
+          type: 'line',
           data: {
             labels: label123,
             datasets: [{
@@ -32,12 +32,21 @@
           },
           options: {
             scales: {
-              y: {
-                beginAtZero: true
+              x: {
+              display: true,
+              title: {
+                display: true,
+                text: 'Time Interval'
               }
+            },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: 'Energy Consumption in kWH'
             }
-          }
-        });
+            }
+        }}});
       </script>
 </body>
 </html>
