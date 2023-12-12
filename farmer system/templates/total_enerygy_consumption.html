@@ -1,3 +1,5 @@
+<!-- This Graph represents the enerygy consumption of devide_id=4 for august month -->
+<!-- Time is not in sorted order. We have to order it by time -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,21 +10,21 @@
 </head>
 <body>
     <div>
-        <canvas id="myChart"></canvas>
+        <canvas id="total_enerygy_consumption"></canvas>
       </div>
       
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       
       <script>
-        const ctx = document.getElementById('myChart');
+        const ctx = document.getElementById('total_enerygy_consumption');
       
         new Chart(ctx, {
-          type: 'bar',
+          type: 'line',
           data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            labels: ['11:00:00','12:00:00','12:59:45','09:00:00','10:00:00','11:00:00','11:59:45'],
             datasets: [{
-              label: '# of Votes',
-              data: [12, 19, 3, 5, 2, 3],
+              label: 'Energy Consumption in Kw',
+              data: [1.23, 0.99, 3.12, 0, 0.66, 0.87,2.32],
               borderWidth: 1
             }]
           },
