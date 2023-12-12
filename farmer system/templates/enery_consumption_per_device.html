@@ -1,0 +1,41 @@
+<!-- This Graph represents the enerygy consumption of devide_id=4 for august month -->
+<!-- Time is not in sorted order. We have to order it by time -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>View 1</title>
+</head>
+<body>
+    <div>
+        <canvas id="daily_consumption"></canvas>
+      </div>
+      
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      
+      <script>
+        const ctx = document.getElementById('daily_consumption');
+      
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ['11:00:00','12:00:00','12:59:45','09:00:00','10:00:00','11:00:00','11:59:45'],
+            datasets: [{
+              label: 'Energy Consumption in Kw',
+              data: [1.23, 0.99, 3.12, 0, 0.66, 0.87,2.32],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+      </script>
+</body>
+</html>

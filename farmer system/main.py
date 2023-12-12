@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash,check_password_hash
 from flask_login import login_user,logout_user,login_manager,LoginManager
 from flask_login import login_required,current_user
 from sqlalchemy import text,create_engine
+import sqlalchemy
 
 
 
@@ -108,34 +109,44 @@ def LocationDetails():
 
 @app.route('/Devices')
 def Devices():
-    #m=conn.execute(text(f"SELECT * FROM register where uid={current_user.get_id()} LIMIT 1"))
-    m=Register.query.filter_by(uid=current_user.get_id()).first()
-    #query=conn.execute(text(f"SELECT * FROM Adddevice where bid={m.rid}"))
-    query=Adddevice.query.filter_by(bid=m.rid).all()
-    return render_template('Devices.html',query=query)
+    m=conn.execute(text(f"SELECT * FROM register where uid={current_user.get_id()}"))
+    res=[row[0] for row in m]
+    res1=[]
+    for x in res:
+        query=conn.execute(text(f"SELECT * FROM Adddevice where bid={x}"))
+        for y in query:
+            res1.append(y)
+    return render_template('Devices.html',query=res1)
 
 @app.route('/adddevice',methods=['POST','GET'])
 @login_required
 def adddevice():
-    type1=Typee.query.all()
-    num=Register.query.all()
+    type1=conn.execute(text(f"SELECT * FROM Typee"))
+    num=conn.execute(text(f"SELECT * FROM Register"))
     if request.method=="POST":
         Location_unit_number=request.form.get('Location_unit_number')
         Type=request.form.get('Type')
         Product=request.form.get('Product')
         Color=request.form.get('Color')
         price=request.form.get('price')
-        l=Register.query.filter_by(Unit_Number=Location_unit_number).first()
-        products=Adddevice(bid=l.rid,Location_unit_number=Location_unit_number,Type=Type,Product=Product,Color=Color,price=price)
-        db.session.add(products)
-        db.session.commit()
+        l1=conn.execute(text(f"Select * from Register where Unit_Number={Location_unit_number}"))
+        res=[row[0] for row in l1][0]
+        #l=Register.query.filter_by(Unit_Number=Location_unit_number).first()
+        print(res,Type,Product,Color,price)
+        products=conn.execute(text(f"INSERT INTO Adddevice(bid,Location_unit_number,Type,Product,Color,price) VALUES ({res},{Location_unit_number},\"{Type}\", {Product}, \"{Color}\",{price})"))
+        #products=Adddevice(bid=l.rid,Location_unit_number=Location_unit_number,Type=Type,Product=Product,Color=Color,price=price)
+        #db.session.add(products)
+        conn.execute(text(f"COMMIT"))
+        #db.session.commit()
         flash("Product Added","info")
         return redirect('/Devices')
     return render_template('adddevice.html',type1=type1, num=num)
 
 @app.route('/prod/<type1>')
 def city(type1):
+    #model=conn.execute(text(f"SELECT * FROM Product where type1={type1}"))
     model = Product.query.filter_by(type1=type1).all()
+    print(model)
     modelarray = []
     for a in model:
         mObj = {}
@@ -149,7 +160,7 @@ def city(type1):
 @login_required
 def triggers():
     # query=db.engine.execute(f"SELECT * FROM `trig`") 
-    query=Trig.query.all()
+    query=conn.execute(text(f"SELECT * FROM Trig"))
     return render_template('triggers.html',query=query)
 
 @app.route('/gettype',methods=['POST','GET'])
@@ -295,14 +306,18 @@ def test():
 @app.route('/views',methods=['POST','GET'])
 @login_required
 def views():
-    if request.method=="POST":
-        return redirect('/chart')
     return render_template('views.html')
-    
-    
-@app.route("/chart")
-def chart():
-    return render_template('chart.html')
+
+@app.route("/enery_consumption_per_device")
+@login_required
+def enery_consumption_per_device():
+    return render_template('enery_consumption_per_device.html')
+
+@app.route("/total_enerygy_consumption")
+@login_required
+def total_enerygy_consumption():
+    return render_template('enery_consumption_per_device.html')
+
 
 
 app.run(debug=True)    
