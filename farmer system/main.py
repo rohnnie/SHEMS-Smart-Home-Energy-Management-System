@@ -9,7 +9,7 @@ from flask_login import login_required,current_user
 # MY db connection
 local_server= True
 app = Flask(__name__)
-app.secret_key='harshithbhaskar'
+app.secret_key='rohanutsav'
 
 
 # this is for getting unique user access
