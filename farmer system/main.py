@@ -4,12 +4,14 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash,check_password_hash
 from flask_login import login_user,logout_user,login_manager,LoginManager
 from flask_login import login_required,current_user
+from sqlalchemy import text,create_engine
+
 
 
 # MY db connection
 local_server= True
 app = Flask(__name__)
-app.secret_key='harshithbhaskar'
+app.secret_key='rohanutsav'
 
 
 # this is for getting unique user access
@@ -23,6 +25,8 @@ def load_user(user_id):
 # app.config['SQLALCHEMY_DATABASE_URL']='mysql://username:password@localhost/databas_table_name'
 app.config['SQLALCHEMY_DATABASE_URI']='mysql://root:@127.0.0.1/shems'
 db=SQLAlchemy(app)
+engine = create_engine("mysql://root:@127.0.0.1/shems")
+conn=engine.connect()
 
 # here we will create db models that is tables
 class Test(db.Model):
@@ -98,14 +102,15 @@ def index():
 @app.route('/LocationDetails')
 @login_required
 def LocationDetails():
-    # query=db.engine.execute(f"SELECT * FROM `register`") 
-    query=Register.query.filter_by(uid=current_user.get_id()).all()
+    query=conn.execute(text(f"SELECT * FROM register where uid={current_user.get_id()}"))
+   # query=Register.query.filter_by(uid=current_user.get_id()).all()
     return render_template('LocationDetails.html',query=query)
 
 @app.route('/Devices')
 def Devices():
-    # query=db.engine.execute(f"SELECT * FROM `Adddevice`") 
+    #m=conn.execute(text(f"SELECT * FROM register where uid={current_user.get_id()} LIMIT 1"))
     m=Register.query.filter_by(uid=current_user.get_id()).first()
+    #query=conn.execute(text(f"SELECT * FROM Adddevice where bid={m.rid}"))
     query=Adddevice.query.filter_by(bid=m.rid).all()
     return render_template('Devices.html',query=query)
 
@@ -286,6 +291,18 @@ def test():
         return 'My database is Connected'
     except:
         return 'My db is not Connected'
+
+@app.route('/views',methods=['POST','GET'])
+@login_required
+def views():
+    if request.method=="POST":
+        return redirect('/chart')
+    return render_template('views.html')
+    
+    
+@app.route("/chart")
+def chart():
+    return render_template('chart.html')
 
 
 app.run(debug=True)    
