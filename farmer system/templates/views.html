@@ -40,14 +40,16 @@ Add Smart Device
     
     <label for="views">Select Views</label>
     <select name="views" id="views">
-        <option value="view1">View1</option>
+        <option value="/chart">View1</option>
         <option value="view2">View2</option>
         <option value="view3">View3</option>
         <option value="view4">View4</option>
       </select>
     </div>
     <br>
-    <a href="/chart.html"></a><button class="btn btn-success  btn-block">Select</button>
+    <input type = 'button' class = "btn btn-success  btn-block" onclick = 'window.open(document.getElementById("views").options[document.getElementById("views").selectedIndex].value)' value = 'Submit' />
+
+    <!-- </a><button class="btn btn-success  btn-block">Select</button> -->
     </form>
     <br>
     <br>

@@ -113,7 +113,7 @@ CREATE TABLE `energydata` (
   `eid` int(11) NOT NULL,
   `pid` int(5) NOT NULL,
   `timeinterval` datetime NOT NULL,
-  `eventlabel` varchar(20) NOT NULL,
+  `eventlabel` varchar(50) NOT NULL,
   `value` int(5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -311,8 +311,8 @@ CREATE TABLE `user` (
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`id`, `username`, `email`, `password`) VALUES
-(5, 'arkpro', 'arkpro@gmail.com', 'pbkdf2:sha256:150000$TfhDWqOr$d4cf40cc6cbfccbdcd1410f9e155ef2aa660620b0439a60c4d74085dbf007a4a');
+-- INSERT INTO `user` (`id`, `username`, `email`, `password`) VALUES
+-- (5, 'arkpro', 'arkpro@gmail.com', 'pbkdf2:sha256:150000$TfhDWqOr$d4cf40cc6cbfccbdcd1410f9e155ef2aa660620b0439a60c4d74085dbf007a4a');
 
 --
 -- Indexes for dumped tables
@@ -372,18 +372,26 @@ ALTER TABLE `user`
 ALTER TABLE `typee`
   ADD PRIMARY KEY (`tid`);
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT
 --
 
 --
--- AUTO_INCREMENT for table `adddevice`
+-- AUTO_INCREMENT for table `test`
 --
-ALTER TABLE `adddevice`
-  MODIFY `pid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1234;
+ALTER TABLE `test`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
--- FOREIGN KEY CONSTRAINT
-ALTER TABLE `adddevice` ADD CONSTRAINT `register_id` FOREIGN KEY (`bid`) REFERENCES `register`(`rid`)
-ON DELETE CASCADE ON UPDATE CASCADE;
+--
+-- AUTO_INCREMENT for table `trig`
+--
+ALTER TABLE `trig`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+--
+-- AUTO_INCREMENT for table `user`
+--
+ALTER TABLE `user`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `typee`
@@ -397,9 +405,11 @@ ALTER TABLE `typee`
 ALTER TABLE `energydata`
   MODIFY `eid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=193;
 
--- FOREIGN KEY CONSTRAINT
-ALTER TABLE `energydata` ADD CONSTRAINT `product_id` FOREIGN KEY (`pid`) REFERENCES `adddevice`(`pid`)
-ON DELETE CASCADE ON UPDATE CASCADE;
+--
+-- AUTO_INCREMENT for table `adddevice`
+--
+ALTER TABLE `adddevice`
+  MODIFY `pid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `consumtionprices`
@@ -420,26 +430,19 @@ ALTER TABLE `register`
   MODIFY `rid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1001;
 
 -- FOREIGN KEY CONSTRAINT
+ALTER TABLE `adddevice` ADD CONSTRAINT `register_id` FOREIGN KEY (`bid`) REFERENCES `register`(`rid`)
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- FOREIGN KEY CONSTRAINT
+ALTER TABLE `energydata` ADD CONSTRAINT `product_id` FOREIGN KEY (`pid`) REFERENCES `adddevice`(`pid`)
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+-- FOREIGN KEY CONSTRAINT
 ALTER TABLE `register` ADD CONSTRAINT `user_id` FOREIGN KEY (`uid`) REFERENCES `user`(`id`)
 ON DELETE CASCADE ON UPDATE CASCADE;
 
---
--- AUTO_INCREMENT for table `test`
---
-ALTER TABLE `test`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
---
--- AUTO_INCREMENT for table `trig`
---
-ALTER TABLE `trig`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
-
---
--- AUTO_INCREMENT for table `user`
---
-ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
