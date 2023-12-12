@@ -350,6 +350,25 @@ def total_energy_consumption():
         print(labels,data)
         return render_template('total_energy_consumption.html',labels=json.dumps(labels,indent=4, sort_keys=True, default=str),data=json.dumps(data))
 
+@app.route("/energy_consumption_for_zip")
+@login_required
+def energy_consumption_for_zip():
+    with engine.connect() as conn:
+        res=conn.execute(text(f"""Select Location_Unit_number, Sum(value) from adddevice ad 
+                              join energydata ed on ed.pid=ad.pid join register r on r.rid=ad.bid 
+                              where timeinterval 
+                              between \"2022-08-27\" and \"2022-08-30\" and 
+                              eventlabel=\"Energy Use\" group by Location_Unit_number, Zip_Code"""))
+        res1=[row for row in res]
+        labels=[]
+        data=[]
+        for r in res1:
+            labels.append(r[0])
+            data.append(float(r[1]))
+        print(labels,data)
+        return render_template('energy_consumption_for_zip.html',labels=json.dumps(labels),data=json.dumps(data))
+
+
 
 
 app.run(debug=True)    

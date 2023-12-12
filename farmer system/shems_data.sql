@@ -1,3 +1,11 @@
+INSERT INTO register (`rid`, `uid`, `Unit_number`, `City`, `State`, `Zip_Code`, `Area`, `Bedrooms`, `Occupants`)
+VALUES
+  (1001, 1, 101, 'Boston', 'Massachusetts', 02108, 750, 3, 4),
+  (1002, 1, 201, 'Orlando', 'Florida', 32789, 1200, 2, 2),
+  (1003, 2, 103, 'Orlando', 'Florida', 32789, 1200,3,1);
+
+
+
 INSERT INTO `energydata` (`eid`, `pid`, `timeinterval`, `eventlabel`, `value`)
 VALUES
 (112,2,'2022-08-28 11:30:00', 'Switch On',NULL),
@@ -40,6 +48,12 @@ VALUES
 (187,3,'2022-09-29 14:49:36','Door Closed',NULL),
 (188,3,'2022-09-29 16:00:00','Switch Off',12.00),
 (192,2,'2022-09-29 20:55:00','Switch Off',0.15);
+
+
+
+
+
+
 
 (111,1,'2022-08-28 11:00:00', 'Switch On',NULL),
 
