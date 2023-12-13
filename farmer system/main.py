@@ -238,17 +238,17 @@ def edit(rid):
 def edit1(pid):
     with engine.connect() as conn:
         if request.method=="POST":
-            Unit_Number=request.form.get('location')
+            location=request.form.get('location')
             Type=request.form.get('Type')
             Product=request.form.get('Product')
             Color=request.form.get('Color')
             Price=request.form.get('Price')   
-            query=conn.execute(text(f"Update adddevice set Location_unit_number={Unit_Number},Type=\"{Type}\",Product=\"{Product}\",Color=\"{Color}\",price={Price}"))
+            query=conn.execute(text(f"Update adddevice set Location_unit_number={location},Type=\"{Type}\",Product=\"{Product}\",Color=\"{Color}\",price={Price} where pid={pid}"))
             conn.execute(text(f"COMMIT"))
             flash("Device is Updates","success")
             return redirect('/Devices')
-        devices=Devices.query.filter_by(pid=pid).first()
-        return render_template('edit_device.html',posts=devices)
+        devices=Adddevice.query.filter_by(pid=pid).first()
+        return render_template('edit_device.html',devices=devices)
 
 
 @app.route('/signup',methods=['POST','GET'])

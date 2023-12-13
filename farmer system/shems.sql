@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Dec 12, 2023 at 04:51 PM
+-- Generation Time: Dec 13, 2023 at 03:32 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -48,9 +48,9 @@ INSERT INTO `adddevice` (`Location_unit_number`, `bid`, `Type`, `pid`, `Product`
 (201, 1002, 'LED Lights', 5, '26', 'Yellow', 6),
 (201, 1002, 'Fan', 6, '23', 'White', 20),
 (201, 1002, 'Dishwasher', 7, '25', 'Grey', 200),
-(101, 1001, 'Fan', 15, '23', 'Peach', 15),
+(101, 1004, 'Fan', 15, '23', 'Peach', 15),
 (101, 1001, 'Dishwasher', 19, '25', 'Grey', 200),
-(201, 1002, 'Fan', 1248, 'Usha', 'white', 12000);
+(103, 1004, 'Fan', 1248, 'Usha', 'white', 12000);
 
 -- --------------------------------------------------------
 
@@ -120,7 +120,7 @@ INSERT INTO `energydata` (`eid`, `pid`, `timeinterval`, `eventlabel`, `value`) V
 (136, 5, '2022-08-29 18:00:00', 'Switch Off', 0.20),
 (137, 4, '2022-08-29 09:00:00', 'Switch On', NULL),
 (141, 4, '2022-08-29 09:40:00', 'Temperature Increased', 45.00),
-(142, 4, '2022-08-29 10:00:00', 'Energy Use', 0.66),
+(142, 15, '2022-08-29 10:00:00', 'Energy Use', 0.66),
 (143, 4, '2022-08-29 11:00:00', 'Energy Use', 0.87),
 (144, 4, '2022-08-29 11:59:45', 'Switch Off', 2.32),
 (150, 4, '2022-09-09 10:00:00', 'Switch On', NULL),
@@ -137,7 +137,7 @@ INSERT INTO `energydata` (`eid`, `pid`, `timeinterval`, `eventlabel`, `value`) V
 (179, 6, '2022-09-29 08:35:00', 'Switch On', NULL),
 (184, 2, '2022-09-29 13:00:00', 'Energy Use', 0.06),
 (185, 3, '2022-09-29 14:14:52', 'Door Opened', NULL),
-(186, 3, '2022-09-29 14:29:52', 'Energy Use', 10.20),
+(186, 1248, '2022-09-29 14:29:52', 'Energy Use', 10.20),
 (187, 3, '2022-09-29 14:49:36', 'Door Closed', NULL),
 (188, 3, '2022-09-29 16:00:00', 'Switch Off', 12.00),
 (192, 2, '2022-09-29 20:55:00', 'Switch Off', 0.15);
@@ -190,8 +190,8 @@ CREATE TABLE `register` (
 
 INSERT INTO `register` (`rid`, `uid`, `Unit_Number`, `City`, `State`, `Zip_Code`, `Area`, `Bedrooms`, `Occupants`) VALUES
 (1001, 1, 101, 'Boston', 'Massachusetts', 2108, 750, 3, 4),
-(1002, 1, 201, 'Orlando', 'Florida', 32789, 1200, 2, 2);
-(1003, 2, 103, 'Orlando', 'Florida', 32789, 1200,3,1);
+(1002, 1, 201, 'Orlando', 'Florida', 32789, 1200, 2, 2),
+(1004, 2, 103, 'Orlando', 'Florida', 32789, 1200, 3, 1);
 
 --
 -- Triggers `register`
@@ -251,7 +251,11 @@ INSERT INTO `trig` (`id`, `fid`, `action`, `timestamp`) VALUES
 (4, '8', 'Location UPDATED', '2021-01-19 23:17:17'),
 (5, '8', 'Location DELETED', '2021-01-19 23:18:54'),
 (6, '1001', 'Location Inserted', '2023-12-11 22:13:32'),
-(7, '1002', 'Location Inserted', '2023-12-11 22:14:34');
+(7, '1002', 'Location Inserted', '2023-12-11 22:14:34'),
+(8, '1003', 'Location UPDATED', '2023-12-12 19:28:43'),
+(9, '1004', 'Location UPDATED', '2023-12-12 19:52:42'),
+(10, '1003', 'Location UPDATED', '2023-12-12 19:52:46'),
+(11, '1002', 'Location UPDATED', '2023-12-12 19:57:23');
 
 -- --------------------------------------------------------
 
@@ -290,15 +294,16 @@ CREATE TABLE `user` (
   `email` varchar(50) NOT NULL,
   `password` varchar(500) NOT NULL,
   `billing` varchar(50) NOT NULL,
-  `phone` int(10) NOT NULL,
+  `phone` int(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`id`, `username`, `firstName`, `lastName`, `email`, `password`,`billing`,`phone`) VALUES
-(1, 'Alicecorn', 'Alice', 'Morrison', 'alice@gmail.com', 'scrypt:32768:8:1$KZZ8Rs6m5vpoGnHc$9d17822e37db828cd45e62c4aaaca82f345db00a4db9058bd1b29f27f06ecea225489fa14017b4ef4017f535bc9fc39f39706fefb0155c7fccc6ea91c8f13bba','884 NY', '1234567892');
+INSERT INTO `user` (`id`, `username`, `firstName`, `lastName`, `email`, `password`, `billing`, `phone`) VALUES
+(1, 'Alicecorn', 'Alice', 'Morrison', 'alice@gmail.com', 'scrypt:32768:8:1$KZZ8Rs6m5vpoGnHc$9d17822e37db828cd45e62c4aaaca82f345db00a4db9058bd1b29f27f06ecea225489fa14017b4ef4017f535bc9fc39f39706fefb0155c7fccc6ea91c8f13bba', '884 NY', 1234567892),
+(2, 'Jack', 'None', 'None', 'jack@gmail.com', 'scrypt:32768:8:1$VKT37PhndjYIc3Ag$ffb0366023aeac93e67013780dfdcb39ced1e27b4d15693ab1c2433be6d9c66eb6f222103b1ee2776232a60ce0bddfc324adbd9d67a7d9f10624c3bac858e5e9', '700 House', 1908723456);
 
 --
 -- Indexes for dumped tables
@@ -369,7 +374,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `adddevice`
 --
 ALTER TABLE `adddevice`
-  MODIFY `pid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1249;
+  MODIFY `pid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1250;
 
 --
 -- AUTO_INCREMENT for table `consumtionprices`
@@ -393,7 +398,7 @@ ALTER TABLE `product`
 -- AUTO_INCREMENT for table `register`
 --
 ALTER TABLE `register`
-  MODIFY `rid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1003;
+  MODIFY `rid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1005;
 
 --
 -- AUTO_INCREMENT for table `test`
@@ -405,7 +410,7 @@ ALTER TABLE `test`
 -- AUTO_INCREMENT for table `trig`
 --
 ALTER TABLE `trig`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `typee`
@@ -417,7 +422,7 @@ ALTER TABLE `typee`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables
