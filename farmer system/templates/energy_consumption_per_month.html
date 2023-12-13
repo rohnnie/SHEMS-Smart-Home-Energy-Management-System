@@ -1,0 +1,59 @@
+<!-- This Graph represents the enerygy consumption of devide_id=4 for august month -->
+<!-- Time is not in sorted order. We have to order it by time -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Total Energy Consumption in Month of August </title>
+    <style>
+      canvas {
+          max-width: 180%;
+          max-height: 160%;
+      }
+  </style>
+</head>
+<body>
+    <div>
+        <canvas id="energy_consumption_for_zip"></canvas>
+      </div>
+      
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      
+      <script>
+        let label123 = JSON.parse({{labels | tojson}});
+        let data = JSON.parse({{data | tojson}});
+        const ctx = document.getElementById('energy_consumption_for_zip');
+      
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: label123,
+            datasets: [{
+              label: 'Total Energy Consumption in Kw for each month',
+              data: data,
+              borderWidth: 0.5
+            }]
+          },
+          options: {
+            scales: {
+              x: {
+              display: true,
+              title: {
+                display: true,
+                text: 'Months (represented in numbers eg. August=8)'
+              }
+            },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: 'Energy Consumption in kWH'
+            }
+            }
+        }}
+        });
+      </script>
+</body>
+</html>

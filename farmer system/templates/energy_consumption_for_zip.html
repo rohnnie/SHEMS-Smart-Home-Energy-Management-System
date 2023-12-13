@@ -27,15 +27,32 @@
         const ctx = document.getElementById('energy_consumption_for_zip');
       
         new Chart(ctx, {
-          type: 'pie',
+          type: 'bar',
           data: {
             labels: label123,
             datasets: [{
-              label: 'Total Energy Consumption in Kw for the month of August 2022 by each device',
+              label: 'Total Energy Consumption in Kw for each household present in a given zip code',
               data: data,
               borderWidth: 0.5
             }]
-          }
+          },
+          options: {
+            scales: {
+              x: {
+              display: true,
+              title: {
+                display: true,
+                text: 'Location Units'
+              }
+            },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: 'Energy Consumption in kWH'
+            }
+            }
+        }}
         });
       </script>
 </body>

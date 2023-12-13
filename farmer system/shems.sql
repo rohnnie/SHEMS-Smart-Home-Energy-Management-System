@@ -285,16 +285,20 @@ INSERT INTO `typee` (`tid`, `name`) VALUES
 CREATE TABLE `user` (
   `id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
+  `firstName` varchar(50) NOT NULL,
+  `lastName` varchar(50) NOT NULL,
   `email` varchar(50) NOT NULL,
-  `password` varchar(500) NOT NULL
+  `password` varchar(500) NOT NULL,
+  `billing` varchar(50) NOT NULL,
+  `phone` int(10) NOT NULL,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`id`, `username`, `email`, `password`) VALUES
-(1, 'Alice', 'alice@gmail.com', 'scrypt:32768:8:1$KZZ8Rs6m5vpoGnHc$9d17822e37db828cd45e62c4aaaca82f345db00a4db9058bd1b29f27f06ecea225489fa14017b4ef4017f535bc9fc39f39706fefb0155c7fccc6ea91c8f13bba');
+INSERT INTO `user` (`id`, `username`, `firstName`, `lastName`, `email`, `password`,`billing`,`phone`) VALUES
+(1, 'Alicecorn', 'Alice', 'Morrison', 'alice@gmail.com', 'scrypt:32768:8:1$KZZ8Rs6m5vpoGnHc$9d17822e37db828cd45e62c4aaaca82f345db00a4db9058bd1b29f27f06ecea225489fa14017b4ef4017f535bc9fc39f39706fefb0155c7fccc6ea91c8f13bba','884 NY', '1234567892');
 
 --
 -- Indexes for dumped tables
