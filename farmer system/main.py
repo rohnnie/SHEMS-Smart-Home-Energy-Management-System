@@ -77,8 +77,12 @@ class Trig(db.Model):
 class User(UserMixin,db.Model):
     id=db.Column(db.Integer,primary_key=True)
     username=db.Column(db.String(50))
+    firstName=db.Column(db.String(50))
+    lastName=db.Column(db.String(50))
     email=db.Column(db.String(50),unique=True)
     password=db.Column(db.String(1000))
+    billing=db.Column(db.String(50))
+    phone=db.Column(db.Integer)
     registers=db.relationship('Register', backref='user')
 
 
@@ -105,7 +109,7 @@ def index():
 def LocationDetails():
     with engine.connect() as conn:
         query=conn.execute(text(f"SELECT * FROM register where uid={current_user.get_id()}"))
-    # query=Register.query.filter_by(uid=current_user.get_id()).all()
+        # query=Register.query.filter_by(uid=current_user.get_id()).all()
         return render_template('LocationDetails.html',query=query)
 
 @app.route('/Devices')
@@ -125,7 +129,7 @@ def Devices():
 def adddevice():
     with engine.connect() as conn:
         type1=conn.execute(text(f"SELECT * FROM Typee"))
-        num=conn.execute(text(f"SELECT * FROM Register"))
+        num=conn.execute(text(f"SELECT * FROM Register where uid={current_user.get_id()}"))
         if request.method=="POST":
             Location_unit_number=request.form.get('Location_unit_number')
             Type=request.form.get('Type')
@@ -137,8 +141,6 @@ def adddevice():
             #l=Register.query.filter_by(Unit_Number=Location_unit_number).first()
             print(res,Type,Product,Color,price)
             products=conn.execute(text(f"INSERT INTO Adddevice(bid,Location_unit_number,Type,Product,Color,price) VALUES ({res},{Location_unit_number},\"{Type}\", \"{Product}\", \"{Color}\",{price})"))
-            #products=Adddevice(bid=l.rid,Location_unit_number=Location_unit_number,Type=Type,Product=Product,Color=Color,price=price)
-            #db.session.add(products)
             conn.execute(text(f"COMMIT"))
             #db.session.commit()
             flash("Product Added","info")
@@ -184,73 +186,99 @@ def gettype():
 
 
 
+@app.route("/delete1/<string:pid>",methods=['POST','GET'])
+@login_required
+def delete1(pid):
+    with engine.connect() as conn:
+        query=conn.execute(text(f"DELETE FROM adddevice where pid={pid}"))
+        # db.engine.execute(f"DELETE FROM `register` WHERE `register`.`rid`={rid}")
+        #post=Register.query.filter_by(rid=rid).first()
+        #db.session.delete(post)
+        conn.execute(text(f"COMMIT"))
+        #db.session.commit()
+        flash("Slot Deleted Successful","warning")
+        return redirect('/Devices')
+
 @app.route("/delete/<string:rid>",methods=['POST','GET'])
 @login_required
 def delete(rid):
-    # db.engine.execute(f"DELETE FROM `register` WHERE `register`.`rid`={rid}")
-    post=Register.query.filter_by(rid=rid).first()
-    db.session.delete(post)
-    db.session.commit()
-    flash("Slot Deleted Successful","warning")
-    return redirect('/LocationDetails')
+    with engine.connect() as conn:
+        query=conn.execute(text(f"DELETE FROM register where rid={rid}"))
+        # db.engine.execute(f"DELETE FROM `register` WHERE `register`.`rid`={rid}")
+        #post=Register.query.filter_by(rid=rid).first()
+        #db.session.delete(post)
+        conn.execute(text(f"COMMIT"))
+        #db.session.commit()
+        flash("Slot Deleted Successful","warning")
+        return redirect('/LocationDetails')
 
 
 @app.route("/edit/<string:rid>",methods=['POST','GET'])
 @login_required
 def edit(rid):
-    # product=db.engine.execute("SELECT * FROM `product`") 
-    if request.method=="POST":
-        Unit_Number=request.form.get('Unit_Number')
-        City=request.form.get('City')
-        State=request.form.get('State')
-        Zip_Code=request.form.get('Zip_Code')
-        Area=request.form.get('Area')
-        Bedrooms=request.form.get('Bedrooms')
-        Occupants=request.form.get('Occupants')     
-        # query=db.engine.execute(f"UPDATE `register` SET `Unit_Number`='{Unit_Number}',`City`='{City}',`State`='{State}',`Zip_Code`='{Zip_Code}',`Area`='{Area}',`Occupants`='{Occupants}',`Bedrooms`='{Bedrooms}'")
-        post=Register.query.filter_by(rid=rid).first()
-        print(post.Unit_Number)
-        post.uid={current_user.get_id}
-        post.Unit_Number=Unit_Number
-        post.City=City
-        post.State=State
-        post.Zip_Code=Zip_Code
-        post.Area=Area
-        post.Bedrooms=Bedrooms
-        post.Occupants=Occupants
-        db.session.commit()
-        flash("Slot is Updates","success")
-        return redirect('/LocationDetails')
-    posts=Register.query.filter_by(rid=rid).first()
-    product=Product.query.all()
-    return render_template('edit.html',posts=posts,product=product)
+    with engine.connect() as conn:
+        if request.method=="POST":
+            Unit_Number=request.form.get('Unit_Number')
+            City=request.form.get('City')
+            State=request.form.get('State')
+            Zip_Code=request.form.get('Zip_Code')
+            Area=request.form.get('Area')
+            Bedrooms=request.form.get('Bedrooms')
+            Occupants=request.form.get('Occupants')     
+            products=conn.execute(text(f"Update register set Unit_Number={Unit_Number},City=\"{City}\",State=\"{State}\",Zip_Code={Zip_Code},Area={Area}, Occupants={Occupants}, Bedrooms={Bedrooms} where rid={rid}"))
+            conn.execute(text(f"COMMIT"))
+            flash("Slot is Updates","success")
+            return redirect('/LocationDetails')
+        posts=Register.query.filter_by(rid=rid).first()
+        product=Product.query.all()
+        return render_template('edit.html',posts=posts,product=product)
+
+@app.route("/edit1/<string:pid>",methods=['POST','GET'])
+@login_required
+def edit1(pid):
+    with engine.connect() as conn:
+        if request.method=="POST":
+            Unit_Number=request.form.get('location')
+            Type=request.form.get('Type')
+            Product=request.form.get('Product')
+            Color=request.form.get('Color')
+            Price=request.form.get('Price')   
+            query=conn.execute(text(f"Update adddevice set Location_unit_number={Unit_Number},Type=\"{Type}\",Product=\"{Product}\",Color=\"{Color}\",price={Price}"))
+            conn.execute(text(f"COMMIT"))
+            flash("Device is Updates","success")
+            return redirect('/Devices')
+        devices=Devices.query.filter_by(pid=pid).first()
+        return render_template('edit_device.html',posts=devices)
 
 
 @app.route('/signup',methods=['POST','GET'])
 def signup():
-    if request.method == "POST":
-        username=request.form.get('username')
-        email=request.form.get('email')
-        password=request.form.get('password')
-        print(username,email,password)
-        user=User.query.filter_by(email=email).first()
-        if user:
-            flash("Email Already Exist","warning")
-            return render_template('/signup.html')
-        encpassword=generate_password_hash(password)
+    with engine.connect() as conn:
+        if request.method == "POST":
+            username=request.form.get('username')
+            first=request.form.get('first')
+            last=request.form.get('last')
+            email=request.form.get('email')
+            password=request.form.get('password')
+            billing=request.form.get('billing')
+            phone=request.form.get('no')
+            print(username,email,password)
+            user=User.query.filter_by(email=email).first()
+            if user:
+                flash("Email Already Exist","warning")
+                return render_template('/signup.html')
+            encpassword=generate_password_hash(password)
+            query=conn.execute(text(f"INSERT INTO User(username,firstName,lastName,email,password,billing,phone) VALUES (\"{username}\",\"{first}\",\"{last}\", \"{email}\", \"{encpassword}\",\"{billing}\",{phone})"))
+            conn.execute(text(f"COMMIT"))
+            # newuser=User(username=username,email=email,password=encpassword)
+            # db.session.add(newuser)
+            # db.session.commit()
+            flash("Signup Succes Please Login","success")
+            return render_template('login.html')
 
-        # new_user=db.engine.execute(f"INSERT INTO `user` (`username`,`email`,`password`) VALUES ('{username}','{email}','{encpassword}')")
+            
 
-        # this is method 2 to save data in db
-        newuser=User(username=username,email=email,password=encpassword)
-        db.session.add(newuser)
-        db.session.commit()
-        flash("Signup Succes Please Login","success")
-        return render_template('login.html')
-
-          
-
-    return render_template('signup.html')
+        return render_template('signup.html')
 
 @app.route('/login',methods=['POST','GET'])
 def login():
@@ -258,6 +286,7 @@ def login():
         email=request.form.get('email')
         password=request.form.get('password')
         user=User.query.filter_by(email=email).first()
+        print(user)
 
         if user and check_password_hash(user.password,password):
             login_user(user)
@@ -281,23 +310,21 @@ def logout():
 @app.route('/register',methods=['POST','GET'])
 @login_required
 def register():
-    product=Product.query.all()
-    if request.method=="POST":
-        Unit_Number=request.form.get('Unit_Number')
-        City=request.form.get('City')
-        State=request.form.get('State')
-        Zip_Code=request.form.get('Zip_Code')
-        Area=request.form.get('Area')
-        Bedrooms=request.form.get('Bedrooms')
-        Occupants=request.form.get('Occupants')    
-        uid=current_user.get_id()
-        query=Register(uid=uid,Unit_Number=Unit_Number,City=City,State=State,Zip_Code=Zip_Code,Area=Area,Bedrooms=Bedrooms,Occupants=Occupants)
-        db.session.add(query)
-        db.session.commit()
-        # query=db.engine.execute(f"INSERT INTO `register` (`Unit_Number`,`City`,`State`,`Zip_Code`,`Bedrooms`,`Area`,`Occupants`) VALUES ('{Unit_Number}','{City}','{State}','{Zip_Code}','{Bedrooms}','{Area}','{Occupants}')")
-        # flash("Your Record Has Been Saved","success")
-        return redirect('/LocationDetails')
-    return render_template('Location.html',product=product)
+    with engine.connect() as conn:
+        product=Product.query.all()
+        if request.method=="POST":
+            Unit_Number=request.form.get('Unit_Number')
+            City=request.form.get('City')
+            State=request.form.get('State')
+            Zip_Code=request.form.get('Zip_Code')
+            Area=request.form.get('Area')
+            Bedrooms=request.form.get('Bedrooms')
+            Occupants=request.form.get('Occupants')    
+            uid=current_user.get_id()
+            user=conn.execute(text(f"INSERT INTO Register(uid,Unit_Number,City,State,Zip_Code,Area,Bedrooms,Occupants) VALUES ({uid},{Unit_Number},\"{City}\", \"{State}\",\"{Zip_Code}\", \"{Area}\",\"{Bedrooms}\",\"{Occupants}\")"))
+            conn.execute(text(f"COMMIT"))
+            return redirect('/LocationDetails')
+        return render_template('Location.html',product=product)
 
 @app.route('/test')
 def test():
@@ -356,9 +383,9 @@ def energy_consumption_for_zip():
     with engine.connect() as conn:
         res=conn.execute(text(f"""Select Location_Unit_number, Sum(value) from adddevice ad 
                               join energydata ed on ed.pid=ad.pid join register r on r.rid=ad.bid 
-                              where timeinterval 
+                              where Zip_Code = 32789 and timeinterval 
                               between \"2022-08-27\" and \"2022-08-30\" and 
-                              eventlabel=\"Energy Use\" group by Location_Unit_number, Zip_Code"""))
+                              eventlabel=\"Energy Use\" group by Location_Unit_number"""))
         res1=[row for row in res]
         labels=[]
         data=[]
@@ -367,6 +394,26 @@ def energy_consumption_for_zip():
             data.append(float(r[1]))
         print(labels,data)
         return render_template('energy_consumption_for_zip.html',labels=json.dumps(labels),data=json.dumps(data))
+
+@app.route("/energy_consumption_per_month")
+@login_required
+def view4():
+    with engine.connect() as conn:
+        res=conn.execute(text(f"""
+                            select month(timeinterval), sum(value) as 
+                            energyconsumedpermonth from adddevice ad 
+                            join energydata ed on ad.pid=ed.pid join
+                            register r on r.rid=ad.bid join 
+                            user u on uid={current_user.get_id()} where
+                            eventlabel=\"Energy Use\" group by month(timeinterval)"""))
+        res1=[row for row in res]
+        labels=[]
+        data=[]
+        for r in res1:
+            labels.append(r[0])
+            data.append(float(r[1]))
+        print(labels,data)
+        return render_template('energy_consumption_per_month.html',labels=json.dumps(labels),data=json.dumps(data))
 
 
 
